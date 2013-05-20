@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ "$#" -ne "1" ]; then
+	zenity --info --text="必须有且只有一个命令行参数"
+	exit 1
+fi
+
+temp_dir=$(dirname "$0")
+log=$("$temp_dir"/.unzip-gbk.sh "$1")
+if [ "$?" -ne "0" ]; then
+	zenity --error --text="$log"
+fi
