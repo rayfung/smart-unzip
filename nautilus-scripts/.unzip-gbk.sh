@@ -4,7 +4,7 @@
 travel_dir()
 {
 	local file
-	"$GBKMV" notest *
+	"$UNZIP_TOOL" mv *
 	for file in *
 	do
 		if [ -d "$file" ]; then
@@ -40,13 +40,11 @@ tempdir=$(dirname "$0")
 cd "$tempdir"
 
 export SCRIPT_LOC=$(pwd)
-export GBKMV="$SCRIPT_LOC"/.gbkmv
-export URI2RAW="$SCRIPT_LOC"/.uri2raw
+export UNZIP_TOOL="$SCRIPT_LOC"/.unzip-tool.py
 
-check_executable "$GBKMV" || exit 1
-check_executable "$URI2RAW" || exit 1
+check_executable "$UNZIP_TOOL" || exit 1
 
-ZIP_PATH=$("$URI2RAW" "$NAUTILUS_SCRIPT_CURRENT_URI")
+ZIP_PATH=$("$UNZIP_TOOL" uri "$NAUTILUS_SCRIPT_CURRENT_URI")
 ZIP_FILE="$1"
 OUTPUT_DIR=$(basename -- "$ZIP_FILE" .zip)-$(date +%N)
 
