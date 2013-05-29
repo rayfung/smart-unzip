@@ -35,11 +35,14 @@ smart_unzip()
 {
 	ZIP_PATH=$("$UNZIP_TOOL" uri "$NAUTILUS_SCRIPT_CURRENT_URI")
 	ZIP_FILE="$1"
-	OUTPUT_DIR=$(basename -- "$ZIP_FILE" .zip)-$(date +%N)
+	OUTPUT_DIR=$(basename -- "$ZIP_FILE" .zip)
 
 	[ -z "$ZIP_PATH" ] && return 2
 	cd -- "$ZIP_PATH" || return 1
 
+	if [ -e "$OUTPUT_DIR" ]; then
+		zenity --question --text="“$OUTPUT_DIR”里面的文件可能会被覆盖，确定要继续吗？" || return 1
+	fi
 	log_file_path=/tmp/unzip-gbk-7z-output.log
 	LANG=C 7z x -o"$OUTPUT_DIR" -y -- "$ZIP_FILE" > "$log_file_path"
 	status="$?"
