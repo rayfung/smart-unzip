@@ -65,7 +65,4 @@ export UNZIP_TOOL="$SCRIPT_LOC"/.unzip-tool.py
 
 check_executable "$UNZIP_TOOL" || exit 1
 
-log=$(smart_unzip "$1")
-if [ "$?" -ne "0" ]; then
-	zenity --error --text="$log"
-fi
+(echo 0 ; smart_unzip "$1" > /dev/null ; echo 100) | zenity --progress --text='正在解压……' --auto-close --no-cancel --pulsate
