@@ -64,15 +64,20 @@ smart_unzip()
 	fi
 	OUTPUT_DIR=$(get_unique_dir "$OUTPUT_DIR")
 	log_file_path=/tmp/unzip-gbk-7z-output.log
-	LANG=C 7z x -o"$OUTPUT_DIR" -y -- "$ZIP_FILE" > "$log_file_path"
-	status="$?"
-	cat "$log_file_path" | sed '/^[Ee]xtracting/d'
-	[ "$status" -ne "0" ] && return 1
-	cd -- "$OUTPUT_DIR" || return 1
+	LANG=C 7z l -- "$ZIP_FILE" | sed '/^[^0-9]/d' > "$log_file_path"
+	encoding=$("$UNZIP_TOOL" detect "$log_file_path")
+	if [ "$encoding" == "utf-8" ]; then
+		7z x -o"$OUTPUT_DIR" -y -- "$ZIP_FILE" > "$log_file_path"
+	else
+		LANG=C 7z x -o"$OUTPUT_DIR" -y -- "$ZIP_FILE" > "$log_file_path"
+		status="$?"
+		[ "$status" -ne "0" ] && return 1
+		cd -- "$OUTPUT_DIR" || return 1
 
-	travel_dir
+		travel_dir
 
-	return 0
+		return 0
+	fi
 }
 
 if [ "$#" -ne "1" ]; then
