@@ -68,4 +68,5 @@ export UNZIP_TOOL="$SCRIPT_LOC"/.unzip-tool.py
 
 check_executable "$UNZIP_TOOL" || exit 1
 
-(echo 0 ; smart_unzip "$1" > /dev/null ; echo 100) | zenity --progress --text='正在解压……' --auto-close --no-cancel --pulsate
+(echo 0 ; smart_unzip "$1" > /dev/null ; echo 100) | \
+	zenity --progress --text='正在解压……' --auto-close --no-cancel --pulsate
