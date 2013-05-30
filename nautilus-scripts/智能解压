@@ -31,6 +31,21 @@ check_executable()
 	fi
 }
 
+get_unique_dir()
+{
+	u_dir="$1"
+	if [ -e "$u_dir" ]; then
+		i=2
+		while [ -e "$u_dir ($i)" ]
+		do
+			i=$((i+1))
+		done
+		printf "%s" "$u_dir ($i)"
+	else
+		printf "%s" "$u_dir"
+	fi
+}
+
 smart_unzip()
 {
 	ZIP_PATH=$("$UNZIP_TOOL" uri "$NAUTILUS_SCRIPT_CURRENT_URI")
@@ -40,9 +55,14 @@ smart_unzip()
 	[ -z "$ZIP_PATH" ] && return 2
 	cd -- "$ZIP_PATH" || return 1
 
-	if [ -e "$OUTPUT_DIR" ]; then
-		zenity --question --text="“$OUTPUT_DIR”里面的文件可能会被覆盖，确定要继续吗？" || return 1
+	if [ "${ZIP_FILE##*.}" != "zip" ]; then
+		zenity --info --text="“$ZIP_FILE”不是zip压缩文件"
+		return 1
 	fi
+	if [ -z "$OUTPUT_DIR" ]; then
+		OUTPUT_DIR='zip'
+	fi
+	OUTPUT_DIR=$(get_unique_dir "$OUTPUT_DIR")
 	log_file_path=/tmp/unzip-gbk-7z-output.log
 	LANG=C 7z x -o"$OUTPUT_DIR" -y -- "$ZIP_FILE" > "$log_file_path"
 	status="$?"
